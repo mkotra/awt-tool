@@ -1,12 +1,22 @@
 package org.example;
 
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.Button;
+import java.awt.Frame;
+import java.awt.Label;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.Robot;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -14,6 +24,7 @@ import java.util.logging.Logger;
 public class AppFrame extends Frame {
 
     private static Logger LOGGER = null;
+
     static {
         InputStream stream = AppFrame.class.getClassLoader().
                 getResourceAsStream("logging.properties");
@@ -31,8 +42,9 @@ public class AppFrame extends Frame {
     Button stopButton = stopButton();
     Button exitButton = exitButton();
     Label label = label();
+    Robot robot = new Robot();
 
-    public AppFrame() {
+    public AppFrame() throws AWTException {
         add(startButton);
         add(stopButton);
         add(exitButton);
@@ -101,23 +113,10 @@ public class AppFrame extends Frame {
         enabled = true;
         startButton.setEnabled(false);
         stopButton.setEnabled(true);
-        try {
-            final Robot robot = new Robot();
-            final Timer timer = new Timer((int) TimeUnit.SECONDS.toMillis(5), null);
-            timer.addActionListener(l -> {
-                if (enabled) {
-                    Point location = MouseInfo.getPointerInfo().getLocation().getLocation();
-                    robot.mouseMove(location.x + 15, location.y + 15);
-                    robot.mouseMove(location.x, location.y);
-                    LOGGER.info("Running...");
-                } else {
-                    timer.stop();
-                }
-            });
-            timer.start();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        ScheduledExecutorService timerService = Executors.newSingleThreadScheduledExecutor();
+        Task task = new Task(timerService);
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(task, 0,  TimeUnit.SECONDS.toMillis(5));
     }
 
     private void stop() {
@@ -132,5 +131,29 @@ public class AppFrame extends Frame {
         stop();
         LOGGER.info("Exit!");
         System.exit(0);
+    }
+
+    class Task extends TimerTask {
+        private final ScheduledExecutorService scheduledExecutorService;
+
+        Task(ScheduledExecutorService scheduledExecutorService) {
+            this.scheduledExecutorService = scheduledExecutorService;
+        }
+
+        public void run() {
+            try {
+                if (enabled) {
+                    Point location = MouseInfo.getPointerInfo().getLocation().getLocation();
+                    robot.mouseMove(location.x + 1, location.y + 1);
+                    robot.mouseMove(location.x, location.y);
+                    LOGGER.info("Running...");
+                } else {
+                    this.cancel();
+                    scheduledExecutorService.shutdown();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
