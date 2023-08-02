@@ -26,8 +26,7 @@ public class AppFrame extends Frame {
     private static Logger LOGGER = null;
 
     static {
-        InputStream stream = AppFrame.class.getClassLoader().
-                getResourceAsStream("logging.properties");
+        InputStream stream = AppFrame.class.getClassLoader().getResourceAsStream("logging.properties");
         try {
             LogManager.getLogManager().readConfiguration(stream);
             LOGGER = Logger.getLogger(AppFrame.class.getName());
@@ -116,7 +115,7 @@ public class AppFrame extends Frame {
         ScheduledExecutorService timerService = Executors.newSingleThreadScheduledExecutor();
         Task task = new Task(timerService);
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(task, 0,  TimeUnit.SECONDS.toMillis(5));
+        timer.scheduleAtFixedRate(task, 0, TimeUnit.SECONDS.toMillis(5));
     }
 
     private void stop() {
