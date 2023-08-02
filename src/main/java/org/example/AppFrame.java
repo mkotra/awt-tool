@@ -1,4 +1,4 @@
-package org.exampe.main;
+package org.example;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,6 +22,10 @@ public class AppFrame extends JFrame {
     JLabel label = label();
 
     public AppFrame() {
+        add(button1);
+        add(button2);
+        add(label);
+
         setSize(170,  200);
         setTitle("awt-tool");
         setLayout(null);
