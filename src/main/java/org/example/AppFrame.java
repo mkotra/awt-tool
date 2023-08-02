@@ -24,13 +24,11 @@ import java.util.logging.Logger;
 public class AppFrame extends Frame {
 
     private static Logger LOGGER = null;
-
     static {
         InputStream stream = AppFrame.class.getClassLoader().getResourceAsStream("logging.properties");
         try {
             LogManager.getLogManager().readConfiguration(stream);
             LOGGER = Logger.getLogger(AppFrame.class.getName());
-
         } catch (IOException e) {
             e.printStackTrace();
         }
