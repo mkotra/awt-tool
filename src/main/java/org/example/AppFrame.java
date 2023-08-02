@@ -5,12 +5,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class AppFrame extends Frame {
 
-    private static final Logger LOGGER = Logger.getLogger(AppFrame.class.getName());
+    private static Logger LOGGER = null;
+    static {
+        InputStream stream = AppFrame.class.getClassLoader().
+                getResourceAsStream("logging.properties");
+        try {
+            LogManager.getLogManager().readConfiguration(stream);
+            LOGGER = Logger.getLogger(AppFrame.class.getName());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     boolean enabled = true;
     Button startButton = startButton();
