@@ -140,10 +140,14 @@ public class AppFrame extends Frame {
         public void run() {
             try {
                 if (enabled) {
-                    Point location = MouseInfo.getPointerInfo().getLocation().getLocation();
-                    robot.mouseMove(location.x + 1, location.y + 1);
-                    robot.mouseMove(location.x, location.y);
-                    LOGGER.info("Running...");
+                    try {
+                        Point location = MouseInfo.getPointerInfo().getLocation().getLocation();
+                        robot.mouseMove(location.x + 1, location.y + 1);
+                        robot.mouseMove(location.x, location.y);
+                        LOGGER.info("Running...");
+                    } catch (Exception e) {
+                        LOGGER.warning("Unable to get mouse location!");
+                    }
                 } else {
                     this.cancel();
                     scheduledExecutorService.shutdown();
